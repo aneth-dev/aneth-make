@@ -23,7 +23,6 @@ define eol
 
 endef
 
-
 define ECLIPSE_PROJECT_FILE
 @echo '<?xml version="1.0" encoding="UTF-8"?>\
 <projectDescription>\
@@ -65,29 +64,34 @@ $(foreach dependence, $(DEPENDENCIES_$(TARGET)),\
 endef
 
 
+# update_file (file, line)
+define update_file
+	$(shell (([ -f '$1' ] && ! grep --fixed-strings -q '$2' '$1') || [ ! -f '$1' ]) && echo '$2' >> '$1')
+endef
+
+
 define ECLIPSE_SETTINGS_FILES
 @-mkdir --parent $(ECLIPSE_WORKSPACE_DIRECTORY)/$(MODULE)/.settings
 $(eval file = $(ECLIPSE_WORKSPACE_DIRECTORY)/$(MODULE)/.settings/org.eclipse.jdt.apt.core.prefs)
-@echo eclipse.preferences.version=1 > $(file)
-@echo org.eclipse.jdt.apt.aptEnabled=true >> $(file)
-@echo org.eclipse.jdt.apt.genSrcDir=.apt_generated >> $(file)
-@echo org.eclipse.jdt.apt.reconcileEnabled=true >> $(file)
+$(call update_file,$(file),eclipse.preferences.version=1)
+$(call update_file,$(file),org.eclipse.jdt.apt.aptEnabled=true)
+$(call update_file,$(file),org.eclipse.jdt.apt.genSrcDir=.apt_generated)
+$(call update_file,$(file),org.eclipse.jdt.apt.reconcileEnabled=true)
 
 $(eval file = $(ECLIPSE_WORKSPACE_DIRECTORY)/$(MODULE)/.settings/org.eclipse.jdt.core.prefs)
-@echo eclipse.preferences.version=1 > $(file)
-@echo org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled >> $(file)
-@echo org.eclipse.jdt.core.compiler.codegen.methodParameters=do not generate >> $(file)
-@echo org.eclipse.jdt.core.compiler.codegen.targetPlatform=$(TARGET_VERSION) >> $(file)
-@echo org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve >> $(file)
-@echo org.eclipse.jdt.core.compiler.compliance=$(SOURCE_VERSION) >> $(file)
-@echo org.eclipse.jdt.core.compiler.debug.lineNumber=generate >> $(file)
-@echo org.eclipse.jdt.core.compiler.debug.localVariable=generate >> $(file)
-@echo org.eclipse.jdt.core.compiler.debug.sourceFile=generate >> $(file)
-@echo org.eclipse.jdt.core.compiler.problem.assertIdentifier=error >> $(file)
-@echo org.eclipse.jdt.core.compiler.problem.enumIdentifier=error >> $(file)
-@echo org.eclipse.jdt.core.compiler.processAnnotations=enabled >> $(file)
-@echo org.eclipse.jdt.core.compiler.source=$(SOURCE_VERSION) >> $(file)
-
+$(call update_file,$(file),eclipse.preferences.version=1)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=enabled)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.codegen.methodParameters=do not generate)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.codegen.targetPlatform=$(TARGET_VERSION))
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.compliance=$(SOURCE_VERSION))
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.debug.lineNumber=generate)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.debug.localVariable=generate)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.debug.sourceFile=generate)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.problem.assertIdentifier=error)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.problem.enumIdentifier=error)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.processAnnotations=enabled)
+$(call update_file,$(file),org.eclipse.jdt.core.compiler.source=$(SOURCE_VERSION))
 endef
 
 
