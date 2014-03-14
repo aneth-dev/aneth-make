@@ -66,7 +66,7 @@ endef
 
 # update_file (file, line)
 define update_file
-	$(shell (([ -f '$1' ] && ! grep --fixed-strings -q '$2' '$1') || [ ! -f '$1' ]) && echo '$2' >> '$1')
+	@sh -c "(([ -f '$1' ] && ! grep --fixed-strings -q '$2' '$1') || [ ! -f '$1' ]) && echo '$2' >> '$1'; exit 0"
 endef
 
 
