@@ -39,7 +39,7 @@ define COMPILE
 	$(eval PROCESSOR_PATH += $(PROCESSOR_FACTORIES_JAR))
 	$(eval PROCESSOR_PATH = $(shell if [ ! -z "$(PROCESSOR_PATH)" ]; then echo $(shell echo $(PROCESSOR_PATH)|sed -r 's/\s+/:/g'); fi))
 
-	$(eval PROCESSOR_OPT = $(shell ([ $(MODULE) = "net.aeten.core" ] || [ $(MODULE) = "net.jcip.annotations" ]) && echo -proc:none || echo -processorpath $(PROCESSOR_PATH)))
+	$(eval PROCESSOR_OPT = $(shell ([ -z "$(PROCESSOR_FACTORIES_MODULES)"] || [ $(MODULE) = "net.aeten.core" ] || [ $(MODULE) = "net.jcip.annotations" ]) && echo -proc:none || echo -processorpath $(PROCESSOR_PATH)))
 
 	$(eval CLASSES =)
 	@echo Pre $(TARGET) start
