@@ -55,12 +55,13 @@ define COMPILE
 		-mkdir --parent $(BUILD_PATH)/`dirname $(resource)` $(eol) \
 		cp $(SOURCE_PATH)/$(resource) $(BUILD_PATH)/`dirname $(resource)` $(eol) \
 	)
-	@echo Post $(TARGET) start
+	@echo Post $(TARGET) start $(eol)
 	$(call post.$(TARGET))
-	@echo Post $(TARGET) end
+	@echo Post $(TARGET) end $(eol)
 endef
 
 define BUILD_JAR
+	@echo Build $(MODULE) Java archive
 	$(JAR) cf $(DIST_DIR)/$(MODULE).jar -C $(BUILD_PATH) .
 	$(info JAR $(DIST_DIR)/$(MODULE).jar built)
 endef
@@ -178,8 +179,8 @@ $(addprefix $(TOUCH_DIR)/,$(MODULES)): %:  $$(addprefix $(TOUCH_DIR)/,$$(shell m
 	)
 	$(eval DEPENDENCIES_$(TARGET) = $(shell echo $(DEPENDENCIES_$(TARGET))|sed -r 's/\s+/\n/g'|sort|uniq))
 	$(eval BUILD_PATH = $(BUILD_DIR)/$(MODULE))
-	$(foreach callback, $(CALLBACKS),\
-		$(call $(callback))\
+	$(foreach callback, $(CALLBACKS), \
+		$(call $(callback)) \
 	)
 	@touch $@
 
