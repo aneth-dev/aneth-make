@@ -30,22 +30,22 @@ ifeq (,$(findstring n,$(MAKEFLAGS)))
 $(shell mkdir --parent $(TOUCH_DIR))
 
 define COMPILE
-	@echo Compile module $(TARGET) $(shell [ ! -z "$(DEPENDENCIES)" ] && echo wich depends on $(shell echo $(DEPENDENCIES)|sed -r 's/\s+/, /g'))
-	$(eval CLASS_PATH_OPT = $(shell if [ ! -z "$(DEPENDENCIES_$(TARGET))" ]; then echo -classpath $(shell echo $(DEPENDENCIES_$(TARGET))|sed -r 's/\s+/:/g'); fi))
+	@echo Compile module $(TARGET) $(shell [ ! -z '$(DEPENDENCIES)' ] && echo wich depends on $(shell echo $(DEPENDENCIES)|sed -r 's/\s+/, /g'))
+	$(eval CLASS_PATH_OPT = $(shell if [ ! -z '$(DEPENDENCIES_$(TARGET))' ]; then echo -classpath $(shell echo $(DEPENDENCIES_$(TARGET))|sed -r 's/\s+/:/g'); fi))
 	$(eval GENERATED_PATH = $(GENERATED_DIR)/$(MODULE))
 	-rm -rf $(GENERATED_PATH)
 	-mkdir --parent $(GENERATED_PATH) $(BUILD_PATH) dist
 	$(eval PROCESSOR_PATH = $(addprefix $(BUILD_DIR)/,$(PROCESSOR_FACTORIES_MODULES)))
 	$(eval PROCESSOR_PATH += $(PROCESSOR_FACTORIES_JAR))
-	$(eval PROCESSOR_PATH = $(shell if [ ! -z "$(PROCESSOR_PATH)" ]; then echo $(shell echo $(PROCESSOR_PATH)|sed -r 's/\s+/:/g'); fi))
+	$(eval PROCESSOR_PATH = $(shell if [ ! -z '$(PROCESSOR_PATH)' ]; then echo $(shell echo $(PROCESSOR_PATH)|sed -r 's/\s+/:/g'); fi))
 
-	$(eval PROCESSOR_OPT = $(shell ([ -z "$(PROCESSOR_FACTORIES_MODULES)"] || [ $(MODULE) = "net.aeten.core" ] || [ $(MODULE) = "net.jcip.annotations" ]) && echo -proc:none || echo -processorpath $(PROCESSOR_PATH)))
+	$(eval PROCESSOR_OPT = $(shell ([ -z '$(PROCESSOR_FACTORIES_MODULES)' ] || [ '$(MODULE)' = 'net.aeten.core' ] || [ '$(MODULE)' = 'net.jcip.annotations' ]) && echo -proc:none || echo -processorpath $(PROCESSOR_PATH)))
 
 	$(eval CLASSES =)
 	@echo Pre $(TARGET) start
 	$(call pre.$(TARGET))
 	@echo Pre $(TARGET) end
-	$(eval CLASSES += $(shell [ -z $(SOURCE_PATH) ] || find $(SOURCE_PATH) -type f $(COMPILE_FILTER) -name '*.java' -and -print))
+	$(eval CLASSES += $(shell [ -z '$(SOURCE_PATH)' ] || find $(SOURCE_PATH) -type f $(COMPILE_FILTER) -name '*.java' -and -print))
 	$(eval COMPILE_FILTER =)
 	$(foreach class, $(CLASSES), \
 		@echo find class $(class)>/dev/null $(eol) \
@@ -170,8 +170,9 @@ $(MODULES):: %: $(TOUCH_DIR)/%
 $(addprefix $(TOUCH_DIR)/,$(MODULES)): %:  $$(addprefix $(TOUCH_DIR)/,$$(shell make -prn|awk '/^$$(subst $(TOUCH_DIR)/,,$$@)::/ && NF > 1 && sub($$$$1,"",$$$$0) { print $$$$0 }'))
 	$(eval TARGET = $(patsubst $(TOUCH_DIR)/%,%,$@))
 	$(eval DEPENDENCIES = $(subst $(TOUCH_DIR)/,,$^))
-	$(eval SOURCE_PATH = $(shell find $(SRC_DIRS) -maxdepth 1 -name \*.$(TARGET) | awk 'BEGIN {source=""} {if (length(source) == 0 || length($$0) < length(source)) {source=$$0}} END {print source "/"}'))
-	$(eval MODULE = $(shell basename $(SOURCE_PATH)))
+	$(eval SOURCE_PATH = $(shell find $(SRC_DIRS) -maxdepth 1 -name \*.$(TARGET) | awk 'BEGIN {source=""} {if (length(source) == 0 || length($$0) < length(source)) {source=$$0}} END {if (source != "") {print source "/"}}'))
+	$(if $(filter-out ,$(SOURCE_PATH)),,$(error 'unresolved module $(TARGET)'))
+	$(eval MODULE = $(shell [ -z '$(SOURCE_PATH)' ] || basename $(SOURCE_PATH)))
 	$(eval CLASS_PATH =)
 	$(foreach dependence, $(DEPENDENCIES), \
 		$(eval DEPENDENCE = $(shell basename $$(find $(SRC_DIRS) -maxdepth 1 -name \*.$(dependence) | awk 'BEGIN {source=""} {if (length(source) == 0 || length($$0) < length(source)) {source=$$0}} END {print source "/"}'))) \
