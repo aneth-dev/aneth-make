@@ -8,6 +8,7 @@ TARGET_VERSION ?= $(SOURCE_VERSION)
 JAVAC ?= javac
 JAR ?= $(shell dirname `which $(JAVAC)`)/jar
 JAVA ?= $(shell dirname `which $(JAVAC)`)/java
+JAVA_HOME = $(shell dirname $(shell dirname $(shell readlink -f `which $(JAVAC)`)))
 SRC_DIRS ?= src
 ECLIPSE_WORKSPACE_DIRECTORY ?= eclipse-workspace
 PROCESSOR_FACTORIES_MODULES ?=
