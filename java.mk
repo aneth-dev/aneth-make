@@ -80,6 +80,9 @@ define eol
 
 endef
 
+define semicolon
+;
+endef
 
 define ECLIPSE_PROJECT_FILE
 @echo '<?xml version="1.0" encoding="UTF-8"?>\
@@ -168,7 +171,7 @@ endef
 $(MODULES):: %: $(TOUCH_DIR)/%
 
 .SECONDEXPANSION:
-$(addprefix $(TOUCH_DIR)/,$(MODULES)): %:  $$(addprefix $(TOUCH_DIR)/,$$(shell make -prn|awk '/^$$(subst $(TOUCH_DIR)/,,$$@)::/ && NF > 1 && sub($$$$1,"",$$$$0) { print $$$$0 }'))
+$(addprefix $(TOUCH_DIR)/,$(MODULES)): %:  $$(addprefix $(TOUCH_DIR)/,$$(shell make -prn|awk '/^$$(subst $(TOUCH_DIR)/,,$$@)::/ && NF > 1 && sub($$$$1,"",$$$$0) { gsub(/\w+\.jni(\s|$$$$)/,"",$$$$0)$$(semicolon) print $$$$0 }'))
 	$(eval TARGET = $(patsubst $(TOUCH_DIR)/%,%,$@))
 	$(eval DEPENDENCIES = $(subst $(TOUCH_DIR)/,,$^))
 	$(eval SOURCE_PATH = $(shell find $(SRC_DIRS) -maxdepth 1 -name \*.$(TARGET) | awk 'BEGIN {source=""} {if (length(source) == 0 || length($$0) < length(source)) {source=$$0}} END {if (source != "") {print source "/"}}'))
