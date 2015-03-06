@@ -63,7 +63,7 @@ endef
 
 define BUILD_JAR
 	@echo Build $(MODULE) Java archive
-	$(JAR) cf $(DIST_DIR)/$(MODULE).jar -C $(BUILD_PATH) .
+	$(JAR) $(shell test -f $(SOURCE_PATH)/META-INF/MANIFEST.MF && echo 'cfm $(DIST_DIR)/$(MODULE).jar $(BUILD_DIR)/$(MODULE)/META-INF/MANIFEST.MF' || echo 'cf $(DIST_DIR)/$(MODULE).jar') -C $(BUILD_DIR)/$(MODULE) .
 	$(info JAR $(DIST_DIR)/$(MODULE).jar built)
 endef
 
@@ -174,7 +174,7 @@ $(MODULES):: %: $(TOUCH_DIR)/%
 $(addprefix $(TOUCH_DIR)/,$(MODULES)): %:  $$(addprefix $(TOUCH_DIR)/,$$(shell make -prn|awk '/^$$(subst $(TOUCH_DIR)/,,$$@)::/ && NF > 1 && sub($$$$1,"",$$$$0) { gsub(/\w+\.jni(\s|$$$$)/,"",$$$$0)$$(semicolon) print $$$$0 }'))
 	$(eval TARGET = $(patsubst $(TOUCH_DIR)/%,%,$@))
 	$(eval DEPENDENCIES = $(subst $(TOUCH_DIR)/,,$^))
-	$(eval SOURCE_PATH = $(shell find $(SRC_DIRS) -maxdepth 1 -name \*.$(TARGET) | awk 'BEGIN {source=""} {if (length(source) == 0 || length($$0) < length(source)) {source=$$0}} END {if (source != "") {print source "/"}}'))
+	$(eval SOURCE_PATH = $(shell find $(SRC_DIRS) -maxdepth 1 -name \*.$(TARGET) -or -name $(TARGET) | awk 'BEGIN {source=""} {if (length(source) == 0 || length($$0) < length(source)) {source=$$0}} END {if (source != "") {print source "/"}}'))
 	$(if $(filter-out ,$(SOURCE_PATH)),,$(error 'unresolved module $(TARGET)'))
 	$(eval MODULE = $(shell [ -z '$(SOURCE_PATH)' ] || basename $(SOURCE_PATH)))
 	$(eval CLASS_PATH =)
