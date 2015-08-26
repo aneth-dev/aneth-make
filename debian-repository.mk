@@ -4,6 +4,7 @@ ifneq ($(wildcard config.mk),)
 include config.mk
 endif
 DIRECTORIES?=.
+GPG_KEY?=
 GPG_KEY_PASSWORD?=
 
 BIN_DIRS=$(shell find $(DIRECTORIES) -type d -name 'binary-*')
@@ -15,6 +16,9 @@ PACKAGES_GZ=$(addsuffix .gz,$(PACKAGES))
 SOURCES_GZ=$(addsuffix .gz,$(SOURCES))
 RELEASES=$(subst apt-ftp.conf,Release,$(APT_FTP_CONF))
 RELEASES_GPG=$(addsuffix .gpg,$(RELEASES))
+ifneq (,$(GPG_KEY))
+GPG_KEY_OPT=-u $(GPG_KEY)
+endif
 
 all: $(PACKAGES_GZ) $(SOURCES_GZ) $(RELEASES_GPG)
 
@@ -43,10 +47,11 @@ $(SOURCES):
 
 %.gpg: %
 	$(info GPG signature $@)
-ifeq ($(GPG_KEY_PASSWORD),)
-	gpg --sign -ba -o $@ $<
+	$(eval GPG_COMMAND=gpg --sign --armor --detach-sign --yes $(GPG_KEY_OPT) -o $@ $<)
+ifeq (,$(GPG_KEY_PASSWORD))
+	@$(GPG_COMMAND)
 else
-	@LANG=C expect -c ' spawn gpg --sign -ba -o $@ $<; \
+	@LANG=C expect -c 'spawn $(GPG_COMMAND); \
 		expect "Enter passphrase:" { send "$(GPG_KEY_PASSWORD)\r" }; \
 		sleep 1' > /dev/null
 endif
