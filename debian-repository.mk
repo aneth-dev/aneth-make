@@ -46,7 +46,7 @@ $(SOURCES):
 ifeq ($(GPG_KEY_PASSWORD),)
 	gpg --sign -ba -o $@ $^
 else
-	@expect -c ' spawn gpg --sign -ba -o $@ $^; \
+	@LANG=C expect -c ' spawn gpg --sign -ba -o $@ $^; \
 		expect "Enter passphrase:" { send "$(GPG_KEY_PASSWORD)\r" }; \
 		sleep 1' > /dev/null
 endif
