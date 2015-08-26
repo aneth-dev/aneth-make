@@ -34,19 +34,19 @@ $(SOURCES):
 	@( cd $(repo) && dpkg-scansources $(relative_dir) > $(relative_dir)/$(notdir $@) )
 
 %.gz: %
-	gzip -9c $^ > $@
+	gzip -9c $< > $@
 
 %/Release: %/apt-ftp.conf
 	$(info Generates $@)
 	$(call init_repository,$@)
-	@( cd $(repo) && apt-ftparchive -c $(relative_dir)/$$(basename $^) release $(relative_dir) > $(relative_dir)/$(notdir $@) )
+	@( cd $(repo) && apt-ftparchive -c $(relative_dir)/$$(basename $<) release $(relative_dir) > $(relative_dir)/$(notdir $@) )
 
 %.gpg: %
 	$(info GPG signature $@)
 ifeq ($(GPG_KEY_PASSWORD),)
-	gpg --sign -ba -o $@ $^
+	gpg --sign -ba -o $@ $<
 else
-	@LANG=C expect -c ' spawn gpg --sign -ba -o $@ $^; \
+	@LANG=C expect -c ' spawn gpg --sign -ba -o $@ $<; \
 		expect "Enter passphrase:" { send "$(GPG_KEY_PASSWORD)\r" }; \
 		sleep 1' > /dev/null
 endif
