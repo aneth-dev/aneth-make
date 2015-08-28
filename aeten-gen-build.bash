@@ -19,6 +19,10 @@ $(echo "${@}"|sed 's/^/\t/')" >&2
 	exit 1
 }
 
+__invalid_option() {
+	echo Invalid option ${1} >&2
+	__usage "$2"
+}
 
 add-prefix() {
 	local prefix=${1}; shift
@@ -43,12 +47,12 @@ target() {
 			-b|--builder) builder="${2}"
 				case "${builder}" in
 					ninja|make);;
-					*) __usage "$1 ${usage}";;
+					*) __invalid_option ${1} "${usage}";;
 				esac
  				shift;;
-			-h|--help)    __help "$1 ${usage}"; shift ;;
+			-h|--help)    __help "${usage}"; shift ;;
 			--)           shift; break;;
-			-*)           __usage "$1 ${usage}";;
+			-*)           __invalid_option ${1} "${usage}";;
 			*)            break;;
 		esac
 		shift
