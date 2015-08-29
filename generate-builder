@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 __api() {
-	sed --quiet --regexp-extended 's/^([[:alpha:]][[:alnum:]_-]*)\(\)\s*\{/\1/p' "${0}" 2>/dev/null
+	sed -n 's/^\([[:alpha:]][[:alnum:]_-]*\)()\s*{/\1/p' "${0}" 2>/dev/null
 }
 
 __is_api() {
-	__api|grep "^${1}$" >&/dev/null
+	__api|grep "^${1}$" 2>&1 > /dev/null
 }
 
 __help() {
@@ -24,7 +24,7 @@ __invalid_option() {
 	__usage "$2"
 }
 
-add-prefix() {
+add_prefix() {
 	local prefix=${1}; shift
 	{
 		while [ ${#} -ne 0 ]; do
@@ -35,9 +35,9 @@ add-prefix() {
 }
 
 target() {
-	local target
-	local depends
-	local cmd
+	local target=
+	local depends=
+	local cmd=
 	local builder=ninja
 	local usage="${0} [-d|--depends <depedency>] [-b|--builder [ninja|make]] <targets-list>"
 	while [ ${#} -ne 0 ]; do
@@ -65,7 +65,7 @@ target() {
 				ninja)
 					echo "build ${target}: ${cmd} ${depends}";;
 				make)
-					echo "${target}: ${depends}\n\t\\\$(call ${cmd},${depends// /,},\\\$@)" ;;
+					printf '%s: %s\\n\\t\\$(call %s,%s,\\$@)\n' ${target} ${depends} ${cmd} $(echo ${depends}|tr \  ,)
 			esac
 		done
 	} | sed -e 's/$/\\/' -e '$s/\\$//'
@@ -99,7 +99,7 @@ ${0} [$(__api|paste -sd\|)] --help"
 			N
 			$!ba
 			s/\\\n/\\x00/g' |\
-		sed --regexp-extended 's,^([[:alpha:]][[:alnum:]_-]*)\s*=\s*(.*), -e "s%@@\1@@%\2%g",' |\
+		sed 's,^\([[:alpha:]][[:alnum:]_-]*\)\s*=\s*\(.*\), -e "s%@@\1@@%\2%g",' |\
 		sed ':a
 			N
 			$!ba
@@ -107,8 +107,8 @@ ${0} [$(__api|paste -sd\|)] --help"
 		sed 's/\x00/\n/g'
 }
 
-if __is_api "${1}"; then
-	cmd=${1}
+if __is_api "$(echo ${1}|tr - _)"; then
+	cmd=$(echo ${1}|tr - _)
 	shift
 	${cmd} "${@}"
 else
