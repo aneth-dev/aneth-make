@@ -1,0 +1,227 @@
+backgroundColor	white		Background of the page, or transparent
+activityArrowColor	#0036A3		Color of arrows in activity diagrams
+activityBackgroundColor	#DCE3F1		Background of activities
+activityBorderColor	#0036A3		Color of activity borders
+activityStartColor	black		Starting circle in activity diagrams
+activityEndColor	black		Ending circle in activity diagrams
+activityBarColor	black		Synchronization bar in activity diagrams
+actorBackgroundColor	#DCE3F1		Head's color of actor
+actorBorderColor	#0036A3		Color of actor borders
+usecaseArrowColor	#0036A3		Color of arrows in usecase diagrams
+usecaseBackgroundColor	#DCE3F1		Background of usecases
+usecaseBorderColor	#0036A3		Color of usecase borders in usecase diagrams
+classArrowColor	#0036A3		Color of arrows in class diagrams
+classBackgroundColor	#DCE3F1		Background of classes/interface/enum in class diagrams
+classBorderColor	#0036A3		Borders of classes/interface/enum in class diagrams
+objectArrowColor	#0036A3		Color of arrows in object diagrams
+objectBackgroundColor	#DCE3F1		Background of object in object diagrams
+objectBorderColor	#0036A3		Borders of object in object diagrams
+packageBackgroundColor	#F5F7FC		Background of packages in class diagrams
+packageBorderColor	#0036A3		Borders of packages in class diagrams
+stereotypeCBackgroundColor	#ADD1B2		Background of class spots in class diagrams
+stereotypeABackgroundColor	#A9DCDF		Background of abstract class spots in class diagrams
+stereotypeIBackgroundColor	#B4A7E5		Background of interface spots in class diagrams
+stereotypeEBackgroundColor	#EB937F		Background of enum spots in class diagrams
+componentArrowColor	#0036A3		Color of arrows in component diagrams
+componentBackgroundColor	#DCE3F1		Background of components
+componentBorderColor	#0036A3		Borders of components
+componentInterfaceBackgroundColor	#DCE3F1		Background of interface in component diagrams
+componentInterfaceBorderColor	#0036A3		Border of interface in component diagrams
+noteBackgroundColor	#FFE39C		Background of notes
+noteBorderColor	#EA671E		Border of notes
+stateBackgroundColor	#DCE3F1		Background of states in state diagrams
+stateBorderColor	#0036A3		Border of states in state diagrams
+stateArrowColor	#0036A3		Colors of arrows in state diagrams
+stateStartColor	black		Starting circle in state diagrams
+stateEndColor	black		Ending circle in state diagrams
+sequenceArrowColor	#0036A3		Color of arrows in sequence diagrams
+sequenceDividerBackgroundColor	#E6E8ED		Background of divider in sequence diagrams
+sequenceGroupBackgroundColor	#E6E8ED		Header color of alt/opt/loop in sequence diagrams
+sequenceLifeLineBackgroundColor	white		Background of life line in sequence diagrams
+sequenceLifeLineBorderColor	#0036A3		Border of life line in sequence diagrams
+sequenceParticipantBackgroundColor	#DCE3F1		Background of participant in sequence diagrams
+sequenceParticipantBorderColor	#0036A3		Border of participant in sequence diagrams
+sequenceBoxLineColor	#0036A3		Border of participant englobers in sequence diagrams
+sequenceBoxBackgroundColor	#CAD1DE		Background of participant englobers in sequence diagrams
+
+
+sequenceMessageAlign	center	Used for messages in sequence diagrams
+sequenceReferenceAlign	center	Used for "ref over" in sequence diagrams
+
+
+activityFontColor	black	Used for activity box
+activityFontSize	14
+activityFontStyle	plain
+activityFontName	Liberation\ Sans
+
+activityArrowFontColor	black	Used for text on arrows in activity diagrams
+activityArrowFontSize	13
+activityArrowFontStyle	plain
+activityArrowFontName	Liberation\ Sans
+
+circledCharacterFontColor	black	 Used for text in circle for class, enum & others
+circledCharacterFontSize	17
+circledCharacterFontStyle	bold
+circledCharacterFontName	Liberation\ Mono
+circledCharacterRadius		11
+
+classArrowFontColor	black	Used for text on arrows in class diagrams
+classArrowFontSize	10
+classArrowFontStyle	plain
+classArrowFontName	Liberation\ Sans
+
+classAttributeFontColor	black	Class attributes and methods
+classAttributeFontSize	10
+classAttributeIconSize	10
+classAttributeFontStyle	plain
+classAttributeFontName	Liberation\ Sans
+
+classFontColor	black	Used for classes name
+classFontSize	12
+classFontStyle	plain
+classFontName	Liberation\ Sans
+
+classStereotypeFontColor	black	Used for stereotype in classes
+classStereotypeFontSize		12
+classStereotypeFontStyle	italic
+classStereotypeFontName	Liberation\ Sans
+
+objectArrowFontColor	black	Used for text on arrows in object diagram
+objectArrowFontSize	10
+objectArrowFontStyle	plain
+objectArrowFontName	Liberation\ Sans
+
+objectAttributeFontColor	black	Object attributes
+objectAttributeFontSize		10
+objectAttributeFontStyle	plain
+objectAttributeFontName	Liberation\ Sans
+
+objectFontColor	black	Used for object name
+objectFontSize	12
+objectFontStyle	plain
+objectFontName	Liberation\ Sans
+
+objectStereotypeFontColor	black	Used for stereotype in objects
+objectStereotypeFontSize	12
+objectStereotypeFontStyle	italic
+objectStereotypeFontName	Liberation\ Sans
+
+componentFontColor	black	Used for components name
+componentFontSize	14
+componentFontStyle	plain
+componentFontName	Liberation\ Sans
+
+componentStereotypeFontColor	black	Used for stereotype in components
+componentStereotypeFontSize	14
+componentStereotypeFontStyle	italic
+componentStereotypeFontName	Liberation\ Sans
+
+componentArrowFontColor	black	Used for text on arrows in component diagrams
+componentArrowFontSize	13
+componentArrowFontStyle	plain
+componentArrowFontName	Liberation\ Sans
+
+noteFontColor	black	Used for notes in all diagrams but sequence diagrams
+noteFontSize	13
+noteFontStyle	plain
+noteFontName	Liberation\ Sans
+
+packageFontColor	black	Used for package and partition names
+packageFontSize		14
+packageFontStyle	plain
+packageFontName	Liberation\ Sans
+
+sequenceActorFontColor	black	Used for actor in sequence diagrams
+sequenceActorFontSize	13
+sequenceActorFontStyle	plain
+sequenceActorFontName	Liberation\ Sans
+
+sequenceDividerFontColor	black	Used for text on dividers in sequence diagrams
+sequenceDividerFontSize		13
+sequenceDividerFontStyle	bold
+sequenceDividerFontName	Liberation\ Sans
+
+sequenceArrowFontColor	black	Used for text on arrows in sequence diagrams
+sequenceArrowFontSize	13
+sequenceArrowFontStyle	plain
+sequenceArrowFontName	Liberation\ Sans
+
+sequenceGroupFontColor	black	Used for text for "else" in sequence diagrams
+sequenceGroupFontSize	11
+sequenceGroupFontStyle	bold
+sequenceGroupFontName	Liberation\ Sans
+
+sequenceGroupHeaderFontColor	black	Used for text for "alt/opt/loop" headers in sequence diagrams
+sequenceGroupHeaderFontSize	13
+sequenceGroupHeaderFontStyle	bold
+sequenceGroupHeaderFontName	Liberation\ Sans
+
+sequenceParticipantFontColor	black	Used for text on participant in sequence diagrams
+sequenceParticipantFontSize	13
+sequenceParticipantFontStyle	plain
+sequenceParticipantFontName	Liberation\ Sans
+
+sequenceStereotypeFontColor	black	Used for stereotypes in sequence diagrams
+sequenceStereotypeFontSize	14
+sequenceStereotypeFontStyle	italic
+sequenceStereotypeFontName	Liberation\ Sans
+
+sequenceTitleFontColor	black	Used for titles in sequence diagrams
+sequenceTitleFontSize	13
+sequenceTitleFontStyle	bold
+sequenceTitleFontName	Liberation\ Sans
+
+titleFontColor	black	Used for titles in all diagrams but sequence diagrams
+titleFontSize	18
+titleFontStyle	plain
+titleFontName	Liberation\ Sans
+
+stateFontColor	black	Used for states in state diagrams
+stateFontSize	14
+stateFontStyle	plain
+stateFontName	Liberation\ Sans
+
+stateArrowFontColor	black	Used for text on arrows in state diagrams
+stateArrowFontSize	13
+stateArrowFontStyle	plain
+stateArrowFontName	Liberation\ Sans
+
+stateAttributeFontColor	black	Used for states description in state diagrams
+stateAttributeFontSize	12
+stateAttributeFontStyle	plain
+stateAttributeFontName	Liberation\ Sans
+
+usecaseFontColor	black	Used for usecase labels in usecase diagrams
+usecaseFontSize		14
+usecaseFontStyle	plain
+usecaseFontName	Liberation\ Sans
+
+usecaseStereotypeFontColor	black	Used for stereotype in usecase
+usecaseStereotypeFontSize	14
+usecaseStereotypeFontStyle	italic
+usecaseStereotypeFontName	Liberation\ Sans
+
+usecaseActorFontColor	black	Used for actor labels in usecase diagrams
+usecaseActorFontSize	14
+usecaseActorFontStyle	plain
+usecaseActorFontName	Liberation\ Sans
+
+usecaseActorStereotypeFontColor	black	Used for stereotype for actor
+usecaseActorStereotypeFontSize	14	
+usecaseActorStereotypeFontStyle	italic
+usecaseActorStereotypeFontName	Liberation\ Sans
+
+usecaseArrowFontColor	black	Used for text on arrows in usecase diagrams
+usecaseArrowFontSize	13
+usecaseArrowFontStyle	plain
+usecaseArrowFontName	Liberation\ Sans
+
+footerFontColor	black	Used for footer
+footerFontSize	10
+footerFontStyle	plain
+footerFontName	Liberation\ Sans
+
+headerFontColor	black	Used for header
+headerFontSize	10
+headerFontStyle	plain
+headerFontName	Liberation\ Sans

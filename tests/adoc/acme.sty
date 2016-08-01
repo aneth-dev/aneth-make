@@ -1,0 +1,241 @@
+\usepackage[utf8x]{inputenc}
+\usepackage{tabularx}
+\usepackage[a4paper]{geometry}
+\usepackage{amssymb}
+\usepackage[linewidth=1pt]{mdframed}
+\usepackage{fontspec}
+\usepackage{titletoc}
+\usepackage[table]{xcolor}
+\usepackage{fancyhdr}
+\usepackage{nameref}
+\usepackage{booktabs}
+\usepackage{newunicodechar}
+\usepackage{enumitem}
+\usepackage{caption}
+
+\setmainfont{Liberation Sans}
+\setsansfont{Liberation Sans}
+\setmonofont{Liberation Mono}
+\newfontfamily{\fallbackfont}{DejaVu Sans}[Scale=MatchLowercase]
+\DeclareTextFontCommand{\textfallback}{\fallbackfont}
+\newunicodechar{❑}{\textfallback{❑}}
+
+\def\toctyle {\setlength{\parskip}{0pt plus .1pt}\hypersetup{linkcolor=black}}
+\dottedcontents{section}[6em]{\toctyle}{6em}{0.4em}
+\dottedcontents{subsection}[6em]{\toctyle}{5em}{0.4em}
+\dottedcontents{subsubsection}[6em]{\toctyle}{4em}{0.4em}
+\dottedcontents{figure}[3em]{\toctyle}{3em}{0.4em}
+\dottedcontents{table}[3em]{\toctyle}{3em}{0.4em}
+
+\definecolor{AcmeBlue}{RGB}{134,171,255}
+\definecolor{AcmeDarkBlue}{RGB}{54,118,255}
+\definecolor{AcmeLightBlue}{RGB}{204,220,255}
+
+\newcommand\ttiny{\@setfontsize\ttiny{4.8pt}{5}}
+\renewcommand\tiny{\@setfontsize\tiny{7pt}{8}}
+\renewcommand\small{\@setfontsize\small{8pt}{10}}
+\renewcommand\normalsize{\@setfontsize\normalsize{10pt}{12}}
+\renewcommand\large{\@setfontsize\large{11pt}{13}}
+\renewcommand\Large{\@setfontsize\Large{12pt}{14}}
+\renewcommand\huge{\@setfontsize\huge{14pt}{16}}
+\renewcommand\Huge{\@setfontsize\Huge{16pt}{18}}
+
+\frenchbsetup{ StandardItemLabels=true }
+\renewcommand{\labelitemi}{\color{AcmeDarkBlue}{\small $❑$}}
+\renewcommand{\labelitemii}{\color{AcmeDarkBlue}{\ttiny $^{\blacksquare}$}}
+\renewcommand{\labelitemiii}{\color{AcmeDarkBlue}{\ttiny $^{❑}$}}
+
+\newdimen\orgtextwidth
+\setlength{\orgtextwidth}{\textwidth}
+
+% This style is derived from the docbook one.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{acme}[2016/05/21 Acme DocBook Style]
+
+%\newgeometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\pagestyle{fancy}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+\fancyhf{}
+\newlength{\myheight}
+\@ifundefined{frontmatter}{
+  \def\frontmatter{
+                   \cleardoublepage\pagenumbering{roman}
+                   \lhead[]{\DBKtitle}
+                   \chead[]{\releasebox}
+                   \rhead[]{\nouppercase{\leftmark}}
+                   \lfoot[]{}
+                   \cfoot[]{\releasebox}
+                   \rfoot[]{\textsf{Page : \thepage{}}}
+  }
+}{}
+\@ifundefined{mainmatter}{
+  \def\mainmatter{\cleardoublepage\pagenumbering{arabic}
+                  \lhead[]{\DBKtitle}
+                  \chead[]{\releasebox}
+                  \rhead[]{\fancyplain{}{\nouppercase{\leftmark}}}
+                  \lfoot[]{}
+                  \cfoot[]{\releasebox}
+                  \rfoot[]{\textsf{Page : \thepage{} / \getpagerefnumber{LastPage}}}}
+}{}
+
+\RequirePackageWithOptions{docbook}
+\newgeometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\setitemize{noitemsep,topsep=2pt,parsep=0pt,partopsep=0pt,itemindent=0em,labelsep=1em,leftmargin=1em}
+\setitemize[1]{leftmargin=5em}
+\setenumerate{itemsep=3pt,topsep=2pt,parsep=0pt,partopsep=0pt,itemindent=0em,labelsep=1em,leftmargin=1em,format=\color{AcmeDarkBlue}}
+\setenumerate[1]{leftmargin=5em}
+\mdfsetup{skipabove=0pt,skipbelow=0pt}
+
+\captionsetup[table]{labelsep=endash}
+\captionsetup[figure]{labelsep=endash}
+
+% re-set the listing environment, because we changed tt font and we
+% don't want colored background
+\lstset{%
+    basicstyle=\ttfamily\small, %
+    backgroundcolor={}%
+}
+
+\newlength\mylength
+\def\blueribbon{
+  \setlength\mylength{0.3\paperheight}
+  \AddToShipoutPicture*{
+     \put(0,\LenToUnit{\mylength}){%
+       {\color{AcmeDarkBlue}\rule{\paperwidth}{1cm}}}
+   }
+}
+
+% custom cover page
+\def\DBKcover{
+  \newgeometry{left=1cm,right=1cm,top=1cm,bottom=1cm}
+  \ifthenelse{\equal{\DBKedition}{}}{\def\edhead{}}{\def\edhead{Ed. \DBKedition}}
+  \thispagestyle{empty}
+  \begin{flushright}
+  \vspace*{1in}
+  \bfseries
+  \sffamily
+  {\Huge @@project.name@@\\}
+  \vspace*{3cm}
+  {\huge @@document.title@@ \\[1ex]\large ~~~ \\}
+  {\normalsize Reference: @@document.ref@@ \\}
+  {\normalsize Version: @@document.version@@ \\}
+  {\color{blue} \Huge ~~~ \\ \huge ~~~ \\}
+  \vspace*{8.5cm}
+  \end{flushright}
+  \blueribbon
+  \begin{flushright}
+  {\normalsize \bfseries \sffamily \DBKdate \\}
+  \end{flushright}
+  \begin{center}{\huge \bfseries \sffamily Acme}\end{center}
+
+  \newgeometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+  \renewcommand{\arraystretch}{1.5}
+}
+
+\def\maketitle{
+  \DBKcover
+  \newpage
+  \DBKdomitete
+  \newpage
+  \begingroup
+    \let\cleardoublepage\relax
+    \let\clearpage\relax
+    \let\newpage\relax
+    \tableofcontents
+    \listoffigures
+    \listoftables
+  \endgroup
+  \newpage
+}
+
+% Longtable tweaks
+\let\oldlongtable\longtable
+\let\endoldlongtable\endlongtable
+\renewenvironment{longtable}{
+  \rowcolors{2}{AcmeLightBlue}{}
+  \oldlongtable
+}{
+  \endoldlongtable
+}
+\let\oldendfirsthead\endfirsthead
+\renewcommand\endfirsthead{\oldendfirsthead\hiderowcolors}
+\let\oldendhead\endhead
+\renewcommand\endhead{\showrowcolors\oldendhead}
+\setlength{\LTpre}{1em}
+\setlength{\LTpost}{-2em}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}\vspace{-1.2em}}p{#1}<{\vspace{-1.2em}}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}\vspace{-1.2em}}p{#1}}
+
+\renewenvironment{DBKrevtable}{
+\setlength{\arrayrulewidth}{0pt}
+\setlength{\belowrulesep}{0pt}
+\setlength{\aboverulesep}{0pt}
+\pagebreak\begin{minipage}{\textwidth}
+\color{AcmeDarkBlue}{\huge\bfseries\sffamily Suivi du document} \\[-0.3em]
+\color{AcmeDarkBlue}{\rule{\textwidth}{2pt}}
+\end{minipage}
+\setcounter{table}{-1}
+
+\setlength{\newtblsparewidth}{1\linewidth-10\tabcolsep}
+\setlength{\newtblstarfactor}{\newtblsparewidth / \real{100}}
+\begin{longtable}{L{11\newtblstarfactor+\arrayrulewidth}L{15\newtblstarfactor+\arrayrulewidth}L{52\newtblstarfactor+\arrayrulewidth}C{23\newtblstarfactor+\arrayrulewidth}}
+  \toprule[\lightrulewidth]
+  \rowcolor{AcmeBlue}
+  \color{white}{\bfseries Révision} & \color{white}{\bfseries Date} & \color{white}{\bfseries Modifications} & \color{white}{\bfseries Nom} \tabularnewline
+  \endfirsthead
+  \rowcolor{AcmeBlue}
+  \color{white}{\bfseries Révision} & \color{white}{\bfseries Date} & \color{white}{\bfseries Modifications} & \color{white}{\bfseries Nom} \tabularnewline
+  \endhead
+}{
+  \bottomrule[\lightrulewidth]
+  \end{longtable}
+  \setlength{\arrayrulewidth}{1pt}
+}
+
+\def\thickhrule{\leavevmode \leaders \hrule height 1ex \hfill \kern \z@}
+\def\position{\centering}
+
+\titleformat
+{\section} % command
+[block] % shape
+{
+%\vskip{-1em}
+\begin{minipage}{\textwidth}\huge\bfseries\sffamily
+} % format
+{ \textcolor{AcmeDarkBlue}{\arabic{section}} }
+{0pt} % sep
+{ \color{AcmeDarkBlue}\uppercase } % before-code
+[
+\vspace{-0.5em}
+\color{AcmeDarkBlue}{\rule{\textwidth}{2pt}}
+\end{minipage}
+] % after-code
+
+\titleformat
+{\subsection} % command
+[block] % shape
+{\begin{minipage}{\textwidth}\Large\bfseries\sffamily} % format
+{\textcolor{AcmeDarkBlue}{\thesection.\arabic{subsection}}}
+{0pt} % sep
+{ \color{AcmeDarkBlue}\uppercase } % before-code
+[
+\vspace{-0.5em}
+\color{AcmeDarkBlue}{\rule{\textwidth}{2pt}}
+\end{minipage}
+] % after-code
+
+\titleformat
+{\subsubsection} % command
+[block] % shape
+{\begin{minipage}{\textwidth}\large\bfseries\sffamily} % format
+{\textcolor{AcmeDarkBlue}{\thesubsection.\arabic{subsubsection}}}
+{0pt} % sep
+{ \color{AcmeDarkBlue} } % before-code
+[
+\vspace{-0.5em}
+\color{AcmeDarkBlue}{\rule{\textwidth}{1pt}}
+\end{minipage}
+] % after-code

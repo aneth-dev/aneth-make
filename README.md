@@ -9,6 +9,10 @@ c.mk
 ----
 Generic makefile for c/c++ libraries or programs
 
+adoc.mk
+----
+Generic makefile for asciidoc PDF generation with dblatex backend. It provides easy stylesheet customization. See tests/adoc/ directory for usage example.
+
 generate-builder
 ----------------
 A tool for Make or Ninja files generation from a template which can be used in configuration scripts.

@@ -1,0 +1,50 @@
+<authorgroup>
+  <author>
+    <firstname>John</firstname>
+    <surname>Doe</surname>
+    <affiliation>
+      <shortaffil>Acme</shortaffil>
+      <jobtitle>Fonction</jobtitle>
+      <orgname>Acme Corp</orgname>
+    </affiliation>
+  </author>
+</authorgroup>
+
+<copyright>
+  <year>2016</year>
+  <holder>Acme Corp</holder>
+</copyright>
+
+<legalnotice>
+  <simpara>
+    This document is the Acme Corp propritary, it can not be used,
+    duplicated or communicated whithout authorization.
+  </simpara>
+</legalnotice>
+
+<revhistory>
+  <revision>
+    <revnumber>0.1</revnumber>
+    <date>dd/mm/yyyy</date>
+    <authorinitials>XX</authorinitials>
+    <revremark>
+      Initial version.
+    </revremark>
+  </revision>
+  <revision>
+    <revnumber>0.2</revnumber>
+    <date>dd/mm/yyyy</date>
+    <authorinitials>XX</authorinitials>
+    <revremark>
+      Typo.
+    </revremark>
+  </revision>
+  <revision>
+    <revnumber>1.0</revnumber>
+    <date>dd/mm/yyyy</date>
+    <authorinitials>XX</authorinitials>
+    <revremark>
+      Firt release.
+    </revremark>
+  </revision>
+</revhistory>

@@ -1,0 +1,42 @@
+@startuml
+start
+:Power on<
+fork
+partition "A unit" {
+	split
+		split
+			:Foo<
+		split again
+			:bar<
+		end split
+		:compute baz;
+		end
+
+	split again
+		:Sample<
+		:Acquisition;
+		if (my test) then (yes)
+			:Trigger>
+			:Start measure;
+			:Reset;
+			end
+		else (no)
+			end
+		endif
+	end split
+}
+
+fork again
+	:Power off<
+
+fork again
+partition "Another unit" {
+	:Measure<
+	:Stats computing;
+	:Send stats>
+	end
+}
+
+end fork
+stop
+@enduml

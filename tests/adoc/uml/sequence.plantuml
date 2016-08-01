@@ -1,0 +1,31 @@
+@startuml
+hide footbox
+participant Foo
+participant Bar
+participant Baz
+
+== Init ==
+Foo -> Foo : Init
+Foo -> Bar : Init
+== Repeat ==
+activate Bar
+loop ∞
+	Bar -> Foo : Start A
+	note right : A: an action
+	activate Foo #AcmeLightBlue
+	Bar -> Foo : Rise trigger
+	activate Foo #AcmeBlue
+	deactivate Foo
+
+	Bar -> Baz : Compute
+	activate Baz
+	Baz -> Baz : Step 1
+
+else End loop
+	Bar -> Baz : End of A
+	Baz -> Foo : End of A
+	activate Foo #AcmeBlue
+	deactivate Foo
+end
+deactivate Bar
+@enduml
