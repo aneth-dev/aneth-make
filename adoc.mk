@@ -36,7 +36,7 @@ DOCBOOKS = $(addprefix ${ADOC_OUTPUT_DIR}/,$(subst .adoc,.xml,$(shell find . -ty
 ADOC_PDF = $(addsuffix .pdf,$(patsubst %/,%,$(dir ${DOCBOOKS})))
 
 .SECONDEXPANSION:
-${DOCBOOKS}: %: $$(shell sed -n 's,^image::\(.*\)\[\],$$(dir $$@)\1,p' $$(subst .xml,.adoc,$$(subst ${ADOC_OUTPUT_DIR}/,,$$@))) $$(subst .xml,.adoc-conf,$$@)
+${DOCBOOKS}: %: $$(foreach req,$$(shell sed -n -e 's,^\(include\|image\)::{BUILD_DIR},\1::..,' -e 's,^\(include\|image\)::\(.*\)\[\],$$(subst ${ADOC_OUTPUT_DIR}/,,$$(dir $$@))/\2,p' $$(subst .xml,.adoc,$$(subst ${ADOC_OUTPUT_DIR}/,,$$@))),$$(shell [ -f '$${req}' ] && echo '$${req}' || echo '${ADOC_OUTPUT_DIR}/$${req}')) $$(subst .xml,.adoc-conf,$$@)
 
 ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES}
 	@mkdir --parent $(dir $@)
@@ -46,10 +46,14 @@ ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES}
 %.pdf: %.svg
 	rsvg-convert -f pdf -o $@ $^
 
+${ADOC_OUTPUT_DIR}/%-sorted.dvs: %.dvs
+	@mkdir --parent $(dir $@)
+	cat $< | sort | awk -F' :' '{key=$$1; value=$$0; gsub(/[- ]/, "_", key); sub(/[^:]*:/, "", value); print "[[" key "," $$1 "]]" $$1 " : " value; }' > $@
+
+
 .SECONDEXPANSION:
 ${ADOC_PDF}: %: $$(basename %)/$$(notdir $$(basename %)).xml ${ADOC_PROPERTIES} $$(basename %)/$$(notdir $$(basename %)).sty $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %))-docinfo.xml))
-	$(eval dblatex=$(shell gawk -F: 'match($$1,/^dblatex(.$(notdir $(basename ${@})))?$$/,a){sub(/^\s*/,"",$$2);print $$2}' ${ADOC_PROPERTIES}))
-	dblatex --output=${@} -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs $(dir ${ADOC_LATEX_STYLE}) --param=latex.encoding=utf8 --texstyle=${<:.xml=.sty} -b xetex ${dblatex} ${<}
+	dblatex --output=${@} '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs $(dir ${ADOC_LATEX_STYLE}) --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES}) ${<}
 
 ${ADOC_OUTPUT_DIR}/%.adoc-conf: %.adoc ${ADOC_PROPERTIES}
 	@mkdir --parent $(dir $@)
@@ -68,12 +72,12 @@ endif
 
 ${ADOC_OUTPUT_DIR}/%.xml: %.adoc
 	@mkdir --parent $(dir $@)
-	asciidoc -a a2x-format=pdf --doctype=article --out-file=${@} --backend docbook -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a tatex-table-rowlimit=1 --conf-file=${@:.xml=.adoc-conf} $<
+	asciidoc -a a2x-format=pdf --doctype=article --out-file=${@} --backend docbook -a 'BUILD_DIR=$(abspath ${ADOC_OUTPUT_DIR})' -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a latex-table-rowlimit=1 --conf-file=${@:.xml=.adoc-conf} $<
 
 adoc: ${ADOC_PDF}
 
 adoc-clean:
-	\rm -f ${ADOC_PDF} $(subst .xml,.adoc-conf,${DOCBOOKS}) ${DOCBOOKS} $(subst .xml,.sty,${DOCBOOKS}) $(subst .xml,.sty,${DOCBOOKS}) $(addprefix ${ADOC_OUTPUT_DIR}/uml/*.,pdf svg)
+	\rm -f ${ADOC_PDF} $(subst .xml,.adoc-conf,${DOCBOOKS}) ${DOCBOOKS} $(subst .xml,.sty,${DOCBOOKS}) $(subst .xml,.sty,${DOCBOOKS}) $(addprefix ${ADOC_OUTPUT_DIR}/uml/*.,pdf svg) $(shell find ${ADOC_OUTPUT_DIR} -type f -name \*-sorted.dvs)
 
 get_var=$$(awk -F: "/^$1:/"'{sub(/^\s*/,"",$$2);value="$2"$$2"$2"} END{print value}' ${ADOC_PROPERTIES})
 get_doc_var=$(call get_var,$(basename $(notdir $1)).$2,\")
