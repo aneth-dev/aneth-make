@@ -48,7 +48,7 @@ ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES}
 
 ${ADOC_OUTPUT_DIR}/%-sorted.dvs: %.dvs
 	@mkdir --parent $(dir $@)
-	cat $< | sort | awk -F' :' '{key=$$1; value=$$0; gsub(/[- ]/, "_", key); sub(/[^:]*:/, "", value); print "[[" key "," $$1 "]]" $$1 " : " value; }' > $@
+	cat $< | sort | awk -F' :' '{key=$$1; value=$$0; ; gsub(/[- ]/, "_", key); gsub(/[àầ]/, "a", key); gsub(/[éèê]/, "e", key); gsub(/[ï]/, "i", key); gsub(/[ô]/, "o", key); gsub(/[ù]/, "u", key); sub(/[^:]*:/, "", value); print "[[" key "," $$1 "]]" $$1 " : " value; }' > $@
 
 
 .SECONDEXPANSION:
@@ -57,7 +57,7 @@ ${ADOC_PDF}: %: $$(basename %)/$$(notdir $$(basename %)).xml ${ADOC_PROPERTIES} 
 
 ${ADOC_OUTPUT_DIR}/%.adoc-conf: %.adoc ${ADOC_PROPERTIES}
 	@mkdir --parent $(dir $@)
-	awk '-F: |:' 'BEGIN{ print "[attributes]"; print "REFERENCE=" '$(call get_doc_var,$<,ref)'; print "TITLE=" '"$(call get_doc_var,$<,title)"'; print "VERSION=" '$(call get_doc_var,$<,version)'; } $$0 ~ /.{1,}/ && $$0 !~ /^dblatex/ {gsub(/\./,"_",$$1); sub(/^\s*/,"",$$2); print toupper($$1)"="$$2;}' ${ADOC_PROPERTIES} > ${@}
+	awk '-F: |:' 'BEGIN{ print "[attributes]"; print "REFERENCE=" '$(call get_doc_var,$<,ref)'; print "DOC_TITLE=" '"$(call get_doc_var,$<,title)"'; print "VERSION=" '$(call get_doc_var,$<,version)'; } $$0 ~ /.{1,}/ && $$0 !~ /^dblatex/ {gsub(/\./,"_",$$1); sub(/^\s*/,"",$$2); print toupper($$1)"="$$2;}' ${ADOC_PROPERTIES} > ${@}
 
 ${ADOC_OUTPUT_DIR}/%.sty: %.adoc ${ADOC_LATEX_STYLE} 
 	@mkdir --parent $(dir $@)
