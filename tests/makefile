@@ -1,3 +1,5 @@
+# Dependencies: see adoc/makefile
+
 OUT=out
 
 .PHONY: all clean adoc $(OUT)/tests/tests
