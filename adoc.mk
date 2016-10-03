@@ -10,7 +10,8 @@
 ADOC_OUTPUT_DIR ?= .
 ADOC_TEX_INPUT ?= .
 
-ADOC_PROPERTIES += $(shell find . -mindepth 1 -maxdepth 1 -type d -exec sh -c '[ -f "{}/{}.properties" ] && echo "{}/{}.properties"' \;)
+ADOC_PROPERTIES += $(shell find . -mindepth 1 -type d -exec sh -c '[ -f "{}/$$(basename {}).adoc" ] && [ -f "{}/$$(basename {}).properties" ] && echo "{}/$$(basename {}).properties"' \;)
+
 ifneq ("$(wildcard ${PLANTUML_SKINPARAM})","")
 PLANTUML_SKIN ?= $(shell awk -F'\t' '$$2 != "" {print " -S"$$1"="$$2}' ${PLANTUML_SKINPARAM})
 endif
@@ -61,8 +62,9 @@ ${ADOC_OUTPUT_DIR}/%.sty: $$(call get_tex_style,%)
 	$(if $<,,$(error No LaTeX style defined for $(notdir ${@:.sty=})))
 	@mkdir --parent $(dir $@)
 	\cp $< ${@}.tmp
-	for var in project.name project.ref $(addprefix $(notdir ${@:.sty=}).,title ref version diffusion.internal diffusion.external) $(foreach actor,$(addprefix $(notdir ${@:.sty=}).,redactor verifier valider formalize client), $(addprefix ${actor},.title .name .date .visa)); do \
-		sed -i 's/@@'$$(echo $${var}|sed 's,$(notdir ${@:.sty=}).,document.,')'@@/'"$(call get_var,$$var,,$(subst ${ADOC_OUTPUT_DIR}/,,${@}))"'/g' ${@}.tmp; \
+	for var in $(shell sed -n 's/[^@]*@@\([^@]\+\)@@[^@]*/\1\n/gp' $<|sort -u); do \
+		resolved_doc_var=$$(echo $${var}|sed 's,document\.,$(notdir ${@:.sty=}).,'); \
+		sed -i 's~@@'$${var}'@@~'"$(call get_var,$${resolved_doc_var},,$(subst ${ADOC_OUTPUT_DIR}/,,${@}))"'~g' ${@}.tmp; \
 	done
 	sed -i 's/@@[^@]\+@@//g;s/\([^\]\)_/\1\\_/g' ${@}.tmp
 	mv ${@}.tmp ${@}
