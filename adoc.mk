@@ -41,6 +41,9 @@ ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES} $(
 	$(eval colors=$(shell gawk -F: 'match($$1,/^rgb\..*$$/,a){sub(/^\s*rgb\.\s*/,"",$$1); sub(/^\s/,"",$$2); print "-D" $$1 "=" $$2}' ${ADOC_PROPERTIES}))
 	java -jar ${PLANTUML} ${colors} ${PLANTUML_SKIN} -ofile $@ -tsvg $<
 
+${ADOC_OUTPUT_DIR}/%.pdf: %.tex
+	pdflatex -output-directory ${@D} $<
+
 %.pdf: %.svg
 	rsvg-convert -f pdf -o $@ $^
 
