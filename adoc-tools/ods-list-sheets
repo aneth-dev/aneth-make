@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+# Debian packages dependencies: libpython2.7-stdlib python-lxml python-pyquery
+
+import zipfile
+import sys
+from pyquery import PyQuery as pq
+from lxml.cssselect import CSSSelector
+
+if (len(sys.argv) != 2):
+	sys.stderr.write("Usage:\n\t" + sys.argv[0] + " ods-file\n")
+	sys.exit(1)
+
+filepath = sys.argv[1]
+
+xml = zipfile.ZipFile(filepath).read('content.xml')
+
+d = pq(xml, parser='xml')
+ns={ 'table': 'urn:oasis:names:tc:opendocument:xmlns:table:1.0' }
+selt = CSSSelector('table|table', namespaces=ns)
+tables = pq(selt(d[0]))
+data = []
+for ir,table in enumerate(tables):
+	print table.attrib["{%s}%s" % (ns['table'],'name')]
+sys.exit(0)

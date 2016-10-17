@@ -5,7 +5,8 @@
 #  - graphviz (used by plantuml),
 #  - dblatex (docbook -> latex),
 #  - rsvg-convert (svg -> pdf),
-# Debian packages: asciidoc dblatex poppler-utils librsvg2-bin graphviz telive-xetex
+#  - python whith stdlib, lxml and pyquery (optional, for ods2pvs tool)
+# Debian packages: asciidoc dblatex poppler-utils librsvg2-bin graphviz telive-xetex libpython2.7-stdlib python-lxml python-pyquery
 
 ADOC_OUTPUT_DIR ?= .
 ADOC_TEX_INPUT ?= .
@@ -26,15 +27,39 @@ ifeq ("$(wildcard ${DBLATEX_XSL})","")
 $(error Please set DBLATEX_XSL variable to the dblatex XSL file location)
 endif
 
-DOCBOOKS = $(addprefix ${ADOC_OUTPUT_DIR}/,$(subst .adoc,.xml,$(shell find . -type f -name \*.adoc $(addprefix -and -not -samefile ,${ADOC_EXCLUDE}))))
+ADOC_TOOLS_DIR = $(addsuffix adoc-tools,$(dir $(filter %/adoc.mk,${MAKEFILE_LIST})))
+
+# Returns the sheet content in PVS format
+# Usage: $(call ods2pvs,ods-file,sheet-name)
+define ods2pvs
+	${ADOC_TOOLS_DIR}/ods2pvs $1 $2
+endef
+
+# Returns the list of sheet found in the ODS file
+# Usage: $(call ods-list-sheets,ods-file)
+define ods-list-sheets
+	${ADOC_TOOLS_DIR}/ods-list-sheets $1
+endef
+
+ADOCS = $(shell find . -type f -name \*.adoc $(addprefix -and -not -samefile ,${ADOC_EXCLUDE}))
+DOCBOOKS = $(addprefix ${ADOC_OUTPUT_DIR}/,$(subst .adoc,.xml,${ADOCS}))
 ADOC_PDF = $(addsuffix .pdf,$(patsubst %/,%,$(dir ${DOCBOOKS})))
 
 get_var=$$(awk -F: "/^$1:/"'{sub(/^\s*/,"",$$2);value="$2"$$2"$2"} END{print value}' $(filter-out $(realpath $(subst ${ADOC_OUTPUT_DIR}/,,$(basename $3).properties)),$(realpath ${ADOC_PROPERTIES})) $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,$(basename $3).properties)))
 get_doc_var=$(call get_var,$(basename $(notdir $1)).$2,$3,$1)
 get_tex_style=$(shell find ${ADOC_TEX_INPUT} -maxdepth 1 -name $(call get_var,latex.style.$(basename $(notdir $1)),,$1).sty)
 
+$(info $(abspath ${ADOC_OUTPUT_DIR}))
 .SECONDEXPANSION:
-${DOCBOOKS}: %: $$(foreach req,$$(shell sed -n -e 's,^\(include\|image\)::{BUILD_DIR},\1::..,' -e 's,^\(include\|image\)::\(.*\)\[\],$$(subst ${ADOC_OUTPUT_DIR}/,,$$(dir $$@))/\2,p' $$(subst .xml,.adoc,$$(subst ${ADOC_OUTPUT_DIR}/,,$$@))),$$(shell [ -f '$${req}' ] && echo '$${req}' || echo '${ADOC_OUTPUT_DIR}/$${req}')) $$(subst .xml,.adoc-conf,$$@)
+${DOCBOOKS}: %: $$(foreach req,$$(shell sed -n -e '/{BUILD_DIR}/! s,^\(include\|image\)::\(.*\)\[\],$$(subst ${ADOC_OUTPUT_DIR}/,,$$(dir $$@))/\2,p' -e 's,^\(include\|image\)::{BUILD_DIR}/\(.*\)\[\],\2,p' $$(subst .xml,.adoc,$$(subst ${ADOC_OUTPUT_DIR}/,,$$@))),$$(shell [ -f '$${req}' ] && echo '$${req}' || echo '${ADOC_OUTPUT_DIR}/$${req}')) $$(subst .xml,.adoc-conf,$$@)
+
+TABLES_SHEETS=$(shell for ods in $$(find * -name \*.ods); do for sheet in $$($(call ods-list-sheets,$${ods})); do echo "${ADOC_OUTPUT_DIR}/$$(dirname $${ods})/$$(basename $${ods} .ods)"-$${sheet}; done ;done)
+ifneq (,${TABLES_SHEETS})
+.SECONDEXPANSION:
+$(addsuffix .pvs,${TABLES_SHEETS}): %: $$(shell echo "$${@:${ADOC_OUTPUT_DIR}/=}"|sed 's,^\(${ADOC_OUTPUT_DIR}/\)\(.\+\)-[^-]\+\.pvs,\2.ods,')
+	@mkdir --parent $(dir $@)
+	$(call ods2pvs,$<,$(patsubst $(notdir $(basename $<))-%,%,$(notdir $(basename $@)))) > $@
+endif
 
 ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES} $(wildcard %.properties)
 	@mkdir --parent $(dir $@)
@@ -49,7 +74,7 @@ ${ADOC_OUTPUT_DIR}/%.pdf: %.tex
 
 ${ADOC_OUTPUT_DIR}/%-sorted.dvs: %.dvs
 	@mkdir --parent $(dir $@)
-	cat $< | sort | awk -F' :' '{key=$$1; value=$$0; gsub(/[- ]/, "_", key); gsub(/[àầ]/, "a", key); gsub(/[éèê]/, "e", key); gsub(/[ï]/, "i", key); gsub(/[ô]/, "o", key); gsub(/[ù]/, "u", key); sub(/[^:]*:/, "", value); print "[[" key "," $$1 "]]" $$1 " : " value; }' > $@
+	cat $< | sort | gawk -F' :' '{key=$$1; value=$$0; gsub(/[- ]/, "_", key); gsub(/[àáâäã]/, "a", key); gsub(/[ÀÁÄÂÃ]/, "A", key); gsub(/[éèêëẽ]/, "e", key); gsub(/[ÉÈÊËẼ]/, "E", key); gsub(/[íìïîĩ]/, "i", key); gsub(/[ÍÌÏÎĨ]/, "I", key); gsub(/[óòôöõ]/, "o", key); gsub(/[ÓÒÔÖÕ]/, "O", key); gsub(/[úùûüũ]/, "u", key); gsub(/[ÚÙÛÜŨ]/, "U", key); gsub(/æ/, "ae", key); gsub(/Æ/, "Ae", key); gsub(/œ/, "oe", key); gsub(/Œ/, "Oe", key); sub(/[^:]*:/, "", value); print "[[" key "," $$1 "]]" $$1 " : " value; }' > $@
 
 
 .SECONDEXPANSION:

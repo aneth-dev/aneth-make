@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+# Debian packages dependencies: libpython2.7-stdlib python-lxml python-pyquery
+
+import zipfile
+import sys
+from pyquery import PyQuery as pq
+from lxml.cssselect import CSSSelector
+
+if (len(sys.argv) != 3):
+	sys.stderr.write("Usage:\n\t" + sys.argv[0] + " ods-file sheet-name\n")
+	sys.exit(1)
+
+filepath = sys.argv[1]
+sheet = sys.argv[2]
+
+xml = zipfile.ZipFile(filepath).read('content.xml')
+
+d = pq(xml, parser='xml')
+ns={'table': 'urn:oasis:names:tc:opendocument:xmlns:table:1.0'}
+selr = CSSSelector('table|table-row', namespaces=ns)
+selc = CSSSelector('table|table-cell', namespaces=ns)
+rowxs = pq(selr(d[0]))
+data = []
+for ir,rowx in enumerate(rowxs):
+	if (rowx.getparent().attrib["{%s}%s" % (ns['table'],'name')] == sheet):
+		cells = pq(selc(rowx))
+		if cells.text():
+			data.append([cells.eq(ic).text().encode('utf-8') for ic in range(len(cells))])
+
+for row in data:
+	for col in row:
+		sys.stdout.write("|")
+		sys.stdout.write(col)
+	sys.stdout.write("\n")
+sys.stdout.flush()
+sys.exit(0)
