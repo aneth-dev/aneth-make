@@ -8,8 +8,11 @@
 #  - python whith stdlib, lxml and pyquery (optional, for ods2pvs tool)
 # Debian packages: asciidoc dblatex poppler-utils librsvg2-bin graphviz telive-xetex libpython2.7-stdlib python-lxml python-pyquery
 
+ADOC_TOOLS_DIR = $(addsuffix adoc-tools,$(dir $(filter %/adoc.mk,${MAKEFILE_LIST})))
+
 ADOC_OUTPUT_DIR ?= .
 ADOC_TEX_INPUT ?= .
+ADOC_CONF ?= ${ADOC_TOOLS_DIR}/docbook45.conf
 
 ADOC_PROPERTIES += $(shell find . -mindepth 1 -type d -exec sh -c '[ -f "{}/$$(basename {}).adoc" ] && [ -f "{}/$$(basename {}).properties" ] && echo "{}/$$(basename {}).properties"' \;)
 
@@ -27,7 +30,6 @@ ifeq ("$(wildcard ${DBLATEX_XSL})","")
 $(error Please set DBLATEX_XSL variable to the dblatex XSL file location)
 endif
 
-ADOC_TOOLS_DIR = $(addsuffix adoc-tools,$(dir $(filter %/adoc.mk,${MAKEFILE_LIST})))
 
 # Returns the sheet content in PVS format
 # Usage: $(call ods2pvs,ods-file,sheet-name)
@@ -99,7 +101,7 @@ ${ADOC_OUTPUT_DIR}/%.sty: $$(call get_tex_style,%)
 
 ${ADOC_OUTPUT_DIR}/%.xml: %.adoc ${ADOC_OUTPUT_DIR}/%.adoc-conf
 	@mkdir --parent $(dir $@)
-	asciidoc --doctype=article --out-file=${@} --backend docbook -a 'BUILD_DIR=$(abspath ${ADOC_OUTPUT_DIR})' -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a latex-table-rowlimit=1 --conf-file=${@:.xml=.adoc-conf} $<
+	asciidoc --doctype=article --out-file=${@} --backend docbook -a 'BUILD_DIR=$(abspath ${ADOC_OUTPUT_DIR})' -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a latex-table-rowlimit=1 $(addprefix --conf-file=, ${ADOC_CONF} ${@:.xml=.adoc-conf}) $<
 
 adoc: ${ADOC_PDF}
 
