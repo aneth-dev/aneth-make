@@ -81,11 +81,12 @@ ${ADOC_OUTPUT_DIR}/%-sorted.dvs: %.dvs
 
 .SECONDEXPANSION:
 ${ADOC_PDF}: %: $$(basename %)/$$(notdir $$(basename %)).xml ${ADOC_PROPERTIES} $$(basename %)/$$(notdir $$(basename %)).sty $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %))-docinfo.xml)) $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %)).properties))
-	dblatex --output=${@} '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) ${<}
+	dblatex --output=${@} '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) -I ${ADOC_OUTPUT_DIR} ${<}
 
 ${ADOC_OUTPUT_DIR}/%.adoc-conf: %.adoc $(wildcard %.properties) ${ADOC_PROPERTIES}
 	@mkdir --parent $(dir $@)
-	awk '-F: |:' 'BEGIN{ print "[attributes]"; print "REFERENCE=" '$(call get_doc_var,$<,ref,\")'; print "DOC_TITLE=" '"$(call get_doc_var,$<,title,\")"'; print "VERSION=" '$(call get_doc_var,$<,version,\")'; } $$0 ~ /.{1,}/ && $$0 !~ /^dblatex/ {gsub(/\./,"_",$$1); sub(/^\s*/,"",$$2); print toupper($$1)"="$$2;}' ${ADOC_PROPERTIES} > ${@}
+	sed 's,{ADOC_TOOLS_DIR},${ADOC_TOOLS_DIR},' ${ADOC_TOOLS_DIR}/filters/latex/latex-filter.conf > ${@}
+	awk '-F: |:' 'BEGIN{ print "\n[attributes]"; print "ADOC_TOOLS_DIR=${ADOC_TOOLS_DIR}"; print "REFERENCE=" '$(call get_doc_var,$<,ref,\")'; print "DOC_TITLE=" '"$(call get_doc_var,$<,title,\")"'; print "VERSION=" '$(call get_doc_var,$<,version,\")'; } $$0 ~ /.{1,}/ && $$0 !~ /^dblatex/ {gsub(/\./,"_",$$1); sub(/^\s*/,"",$$2); print toupper($$1)"="$$2;}' ${ADOC_PROPERTIES} >> ${@}
 
 .SECONDEXPANSION:
 ${ADOC_OUTPUT_DIR}/%.sty: $$(call get_tex_style,%)
@@ -101,7 +102,7 @@ ${ADOC_OUTPUT_DIR}/%.sty: $$(call get_tex_style,%)
 
 ${ADOC_OUTPUT_DIR}/%.xml: %.adoc ${ADOC_OUTPUT_DIR}/%.adoc-conf
 	@mkdir --parent $(dir $@)
-	asciidoc --doctype=article --out-file=${@} --backend docbook -a 'BUILD_DIR=$(abspath ${ADOC_OUTPUT_DIR})' -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a latex-table-rowlimit=1 $(addprefix --conf-file=, ${ADOC_CONF} ${@:.xml=.adoc-conf}) $<
+	asciidoc -v --doctype=article --out-file=${@} --backend docbook -a 'BUILD_DIR=$(abspath ${ADOC_OUTPUT_DIR})' -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a latex-table-rowlimit=1 $(addprefix --conf-file=, ${ADOC_CONF} ${@:.xml=.adoc-conf}) $<
 
 adoc: ${ADOC_PDF}
 
