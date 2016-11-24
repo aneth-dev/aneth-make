@@ -69,6 +69,7 @@ ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES} $(
 	java -jar ${PLANTUML} ${colors} ${PLANTUML_SKIN} -ofile $@ -tsvg $<
 
 ${ADOC_OUTPUT_DIR}/%.pdf: %.tex
+	@mkdir --parent ${@D}
 	pdflatex -output-directory ${@D} $<
 
 %.pdf: %.svg
@@ -102,7 +103,7 @@ ${ADOC_OUTPUT_DIR}/%.sty: $$(call get_tex_style,%)
 
 ${ADOC_OUTPUT_DIR}/%.xml: %.adoc ${ADOC_OUTPUT_DIR}/%.adoc-conf
 	@mkdir --parent $(dir $@)
-	asciidoc -v --doctype=article --out-file=${@} --backend docbook -a 'BUILD_DIR=$(abspath ${ADOC_OUTPUT_DIR})' -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a latex-table-rowlimit=1 $(addprefix --conf-file=, ${ADOC_CONF} ${@:.xml=.adoc-conf}) $<
+	asciidoc --doctype=article --out-file=${@} --backend docbook -a 'BUILD_DIR=$(abspath ${ADOC_OUTPUT_DIR})' -a lang=fr -a frame=topbot -a grid=none -a docinfo -a ascii-ids -a latex-table-rowlimit=1 $(addprefix --conf-file=, ${ADOC_CONF} ${@:.xml=.adoc-conf}) $<
 
 adoc: ${ADOC_PDF}
 
