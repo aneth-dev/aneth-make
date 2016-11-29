@@ -1,12 +1,13 @@
 # Dependencies:
 #  - asciidoc,
+#	- gawk,
 #  - telive-xetex,
 #  - plantuml.jar (schemas UML),
 #  - graphviz (used by plantuml),
 #  - dblatex (docbook -> latex),
 #  - rsvg-convert (svg -> pdf),
 #  - python whith stdlib, lxml and pyquery (optional, for ods2pvs tool)
-# Debian packages: asciidoc dblatex poppler-utils librsvg2-bin graphviz telive-xetex libpython2.7-stdlib python-lxml python-pyquery
+# Debian packages: asciidoc gawk dblatex poppler-utils librsvg2-bin graphviz telive-xetex libpython2.7-stdlib python-lxml python-pyquery
 
 ADOC_TOOLS_DIR = $(addsuffix adoc-tools,$(dir $(filter %/adoc.mk,${MAKEFILE_LIST})))
 
