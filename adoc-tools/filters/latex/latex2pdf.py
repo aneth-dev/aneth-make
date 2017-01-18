@@ -64,7 +64,7 @@ import os, sys, tempfile, md5
 VERSION = '0.1.0'
 
 # Include LaTeX packages and commands here.
-TEX_HEADER = r'''\documentclass[preview]{standalone}
+TEX_HEADER = r'''\documentclass[preview,varwidth]{standalone}
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
