@@ -1,6 +1,6 @@
 # Dependencies:
 #  - asciidoc,
-#	- gawk,
+#  - gawk,
 #  - telive-xetex,
 #  - plantuml.jar (schemas UML),
 #  - graphviz (used by plantuml),
@@ -48,7 +48,8 @@ ADOCS = $(shell find . -type f -name \*.adoc $(addprefix -and -not -samefile ,${
 DOCBOOKS = $(addprefix ${ADOC_OUTPUT_DIR}/,$(subst .adoc,.xml,${ADOCS}))
 ADOC_PDF = $(addsuffix .pdf,$(patsubst %/,%,$(dir ${DOCBOOKS})))
 
-get_var=$$(awk -F: "/^$1:/"'{sub(/^\s*/,"",$$2);value="$2"$$2"$2"} END{print value}' $(filter-out $(realpath $(subst ${ADOC_OUTPUT_DIR}/,,$(basename $3).properties)),$(realpath ${ADOC_PROPERTIES})) $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,$(basename $3).properties)))
+get_var_from=$$(awk -F: "/^$1:/"'{sub(/^\s*/,"",$$2);value="$2"$$2"$2"} END{print value}' ${3})
+get_var=$(call get_var_from,$1,$2,$(filter-out $(realpath $(subst ${ADOC_OUTPUT_DIR}/,,$(basename $3).properties)),$(realpath ${ADOC_PROPERTIES})) $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,$(basename $3).properties)))
 get_doc_var=$(call get_var,$(basename $(notdir $1)).$2,$3,$1)
 get_tex_style=$(shell find ${ADOC_TEX_INPUT} -maxdepth 1 -name $(call get_var,latex.style.$(basename $(notdir $1)),,$1).sty)
 
@@ -71,7 +72,7 @@ ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES} $(
 
 ${ADOC_OUTPUT_DIR}/%.pdf: %.tex
 	@mkdir --parent ${@D}
-	pdflatex -output-directory ${@D} $<
+	TEXINPUTS='./:${ADOC_TEX_INPUT}:' pdflatex -output-directory ${@D} $<
 
 %.pdf: %.svg
 	rsvg-convert -f pdf -o $@ $^
@@ -83,7 +84,7 @@ ${ADOC_OUTPUT_DIR}/%-sorted.dvs: %.dvs
 
 .SECONDEXPANSION:
 ${ADOC_PDF}: %: $$(basename %)/$$(notdir $$(basename %)).xml ${ADOC_PROPERTIES} $$(basename %)/$$(notdir $$(basename %)).sty $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %))-docinfo.xml)) $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %)).properties))
-	dblatex --output=${@} '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) -I ${ADOC_OUTPUT_DIR} ${<}
+	dblatex --output=${@} '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) $(shell echo -n "$(call get_var_from,dblatex,,$(patsubst %.sty,%.properties,$(call get_tex_style,$<)))") -I ${ADOC_OUTPUT_DIR} ${<}
 
 ${ADOC_OUTPUT_DIR}/%.adoc-conf: %.adoc $(wildcard %.properties) ${ADOC_PROPERTIES}
 	@mkdir --parent $(dir $@)
