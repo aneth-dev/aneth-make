@@ -19,4 +19,4 @@ $(OUT)/tests/tests: $(OUT)
 	$(MAKE) --directory=tests OUT='$(realpath $(OUT))' RELATIVE=tests
 
 test: all
-	LD_LIBRARY_PATH=$$(find $(OUT) -name \*.so|xargs dirname|sort|uniq|paste -sd:) $(OUT)/tests/tests tests
+	LD_LIBRARY_PATH=$$(find $(OUT) -name \*.so|xargs dirname|sort -u|paste -sd:) $(OUT)/tests/tests tests

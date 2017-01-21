@@ -1,4 +1,4 @@
-CCFLAGS=-g -O3 -fPIC
+CFLAGS=-g -O3 -fPIC
 LDFLAGS=
 src=.
 deps = test-01 #test-02
