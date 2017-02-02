@@ -13,7 +13,7 @@ ADOC_TOOLS_DIR = $(addsuffix adoc-tools,$(dir $(filter %/adoc.mk,${MAKEFILE_LIST
 
 ADOC_OUTPUT_DIR ?= .
 ADOC_TEX_INPUT ?= .
-ADOC_CONF ?= ${ADOC_TOOLS_DIR}/docbook45.conf
+ADOC_CONF ?= ${ADOC_TOOLS_DIR}/docbook45.conf ${ADOC_TOOLS_DIR}/tex-passthrough.conf
 
 ADOC_PROPERTIES += $(shell find . -mindepth 1 -type d -exec sh -c '[ -f "{}/$$(basename {}).adoc" ] && [ -f "{}/$$(basename {}).properties" ] && echo "{}/$$(basename {}).properties"' \;)
 
