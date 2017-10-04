@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 __api() {
 	sed -n 's/^\([[:alpha:]][[:alnum:]_-]*\)()\s*{/\1/p' "${0}" 2>/dev/null
 }
@@ -25,13 +27,22 @@ __invalid_option() {
 }
 
 add_prefix() {
-	local prefix=${1}; shift
+	local prefix="${1}"; shift
 	{
 		while [ ${#} -ne 0 ]; do
 			echo "${1}"|sed "s@.*@${prefix}\\0@"
 			shift
 		done
 	} | paste -sd' '
+}
+
+replace_suffix() {
+	local old_suffix=${1}; shift
+	local new_suffix=${1}; shift
+	while [ ${#} -ne 0 ]; do
+		echo "${1}"|sed "s/${old_suffix}$/${new_suffix}/"
+		shift
+	done
 }
 
 target() {
@@ -65,7 +76,7 @@ target() {
 				ninja)
 					echo "build ${target}: ${cmd} ${depends}";;
 				make)
-					printf '%s: %s\\n\\t\\$(call %s,%s,\\$@)\n' ${target} ${depends} ${cmd} $(echo ${depends}|tr \  ,)
+					printf '%s: %s\\n\\t@mkdir --parent \\$(dir \\$@)\\n\\t\\$(call %s,%s,\\$^,\\$@)\n' ${target} "${depends}" ${cmd} ${target}
 			esac
 		done
 	} | sed -e 's/$/\\/' -e '$s/\\$//'
@@ -73,11 +84,12 @@ target() {
 
 generate() {
 	local usage="${0} [-t|--template <template.ninja>]
-${0} [$(__api|paste -sd\|)] --help"
+${0} [$(__api|sed s/_/-/g|paste -sd\|)] --help"
 	local template=template.ninja
 	local builder
 	local extension
 	local dict
+	local tab_subst=
 	while [ ${#} -ne 0 ]; do
 		case "${1}" in
 			-t|--template) template=${2}; shift ;;
@@ -90,21 +102,21 @@ ${0} [$(__api|paste -sd\|)] --help"
 		[ $(basename ${template} .${extension}) = $(basename ${template}) ] || { builder=${extension}; break; }
 	done
 	case "${builder}" in
-		ninja);;
+		ninja) tab_subst='s/^\t/    /;';;
 		make|mk);;
 		*) __usage "Invalid builder ${builder}\n${usage}";;
 	esac
-	eval sed $(cat /dev/stdin |\
+	eval sed $(cat -|\
 		sed ':a
 			N
 			$!ba
-			s/\\\n/\\x00/g' |\
+			s/\\\n/\\x00/g ' |\
 		sed 's,^\([[:alpha:]][[:alnum:]_-]*\)\s*=\s*\(.*\), -e "s%@@\1@@%\2%g",' |\
 		sed ':a
 			N
 			$!ba
 			s/\n//g') ${template} |\
-		sed 's/\x00/\n/g'
+		sed "${tab_subst}"'s/\x00/\n/g'
 }
 
 if __is_api "$(echo ${1}|tr - _)"; then
@@ -114,4 +126,3 @@ if __is_api "$(echo ${1}|tr - _)"; then
 else
 	generate "${@}"
 fi
-
