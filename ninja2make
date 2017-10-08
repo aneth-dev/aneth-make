@@ -10,21 +10,28 @@ s/^\(.*\)#.*$/\1/
 /^rule\s\+/ {
 	N
 	s/^rule\s\+\([[:alnum:]_-]\+\)\n/\1 = /
-	s/${\?in}\?/$2/g
-	s/${\?out}\?/$1/g
+	s/$in/$2/g
+	s/$out/$1/g
+	s/${in}/$2/g
+	s/${out}/$1/g
 	s/\s\+description\s*=\s*\(.*\)$/ @@@check@@ -m "\1"/
 	N
-	s/${\?in}\?/$2/g
-	s/${\?out}\?/$1/g
+	s/$in/$2/g
+	s/$out/$1/g
+	s/${in}/$2/g
+	s/${out}/$1/g
 	/\s\+command\s*=/ {
 		s/||\||\|&&\|>\|</'\0'/g
+		s/;/\\;/g
 		s/\s\+command\s*=\s*\(.*\)/ \1/
 	}
 	/^.*\$$/ {
 		:join
 		$!N
-		s/${\?in}\?/$2/g
-		s/${\?out}\?/$1/g
+		s/$in/$2/g
+		s/$out/$1/g
+		s/${in}/$2/g
+		s/${out}/$1/g
 		s/^\(.*\)\$\n\+/\1/
 		t join
 	}
