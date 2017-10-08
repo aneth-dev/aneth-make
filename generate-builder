@@ -30,7 +30,17 @@ add_prefix() {
 	local prefix="${1}"; shift
 	{
 		while [ ${#} -ne 0 ]; do
-			echo "${1}"|sed "s@.*@${prefix}\\0@"
+			echo "${1}"|sed "s@^@${prefix}@"
+			shift
+		done
+	} | paste -sd' '
+}
+
+add_suffix() {
+	local suffix="${1}"; shift
+	{
+		while [ ${#} -ne 0 ]; do
+			echo "${1}"|sed "s@\$@${suffix}@"
 			shift
 		done
 	} | paste -sd' '
