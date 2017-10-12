@@ -46,11 +46,20 @@ add_suffix() {
 	} | paste -sd' '
 }
 
+replace_prefix() {
+	local old_prefix=${1}; shift
+	local new_prefix=${1}; shift
+	while [ ${#} -ne 0 ]; do
+		echo "${1}"|sed "s,^${old_prefix},${new_prefix},"
+		shift
+	done
+}
+
 replace_suffix() {
 	local old_suffix=${1}; shift
 	local new_suffix=${1}; shift
 	while [ ${#} -ne 0 ]; do
-		echo "${1}"|sed "s/${old_suffix}$/${new_suffix}/"
+		echo "${1}"|sed "s,${old_suffix}$,${new_suffix},"
 		shift
 	done
 }
