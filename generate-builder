@@ -84,7 +84,8 @@ target() {
 		for target in "${@}"; do
 			case "${builder}" in
 				ninja)
-					echo "build ${target}: ${cmd} ${depends}";;
+					echo "build ${target}: ${cmd} ${depends}"
+					printf "\tfirst = $(echo ${depends}|sed 's/ .*//')\n";;
 				make)
 					printf '%s: %s\\n\\t@mkdir --parent \\$(dir \\$@)\\n\\t\\$(call %s,%s,\\$^,\\$@)\n' ${target} "${depends}" ${cmd} ${target}
 			esac
