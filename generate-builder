@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
@@ -73,7 +73,7 @@ target() {
 	while [ ${#} -ne 0 ]; do
 		case "${1}" in
 			-c|--command) cmd="${cmd} ${2}"; shift;;
-			-d|--depends) depends="${depends} ${2}"; shift;;
+			-d|--depends) depends="${depends} $(echo ${2})"; shift;;
 			-b|--builder) builder="${2}"
 				case "${builder}" in
 					ninja|make);;
@@ -93,8 +93,7 @@ target() {
 		for target in "${@}"; do
 			case "${builder}" in
 				ninja)
-					echo "build ${target}: ${cmd} ${depends}"
-					printf "\tfirst = $(echo ${depends}|sed 's/ .*//')\n";;
+					printf "build %s: %s %s\n    first = %s\n" "$(eval echo ${target})" ${cmd} "${depends}" "$(echo ${depends}|sed 's/ .*//')";;
 				make)
 					printf '%s: %s\\n\\t@mkdir --parent \\$(dir \\$@)\\n\\t\\$(call %s,%s,\\$^,\\$@)\n' ${target} "${depends}" ${cmd} ${target}
 			esac
