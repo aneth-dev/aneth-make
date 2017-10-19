@@ -93,12 +93,12 @@ target() {
 		for target in "${@}"; do
 			case "${builder}" in
 				ninja)
-					printf "build %s: %s %s\n    first = %s\n" "$(eval echo ${target})" ${cmd} "${depends}" "$(echo ${depends}|sed 's/ .*//')";;
+					printf "build %s: %s %s\n    first = %s\n" "$(echo ${target})" ${cmd} "${depends}" "$(echo ${depends}|sed 's/ .*//')";;
 				make)
 					printf '%s: %s\\n\\t@mkdir --parent \\$(dir \\$@)\\n\\t\\$(call %s,%s,\\$^,\\$@)\n' ${target} "${depends}" ${cmd} ${target}
 			esac
 		done
-	} | sed -e 's/$/\\/' -e '$s/\\$//'
+	}
 }
 
 generate() {
