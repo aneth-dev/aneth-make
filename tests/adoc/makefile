@@ -6,7 +6,7 @@
 
 ADOC_EXCLUDE        =
 ADOC_OUTPUT_DIR    ?= build
-PLANTUML_SKINPARAM  = acme-plantuml.skinparam
+PLANTUML_SKIN       = acme-plantuml.conf
 ADOC_PROPERTIES     = acme.properties test-project.properties
 
 all: adoc

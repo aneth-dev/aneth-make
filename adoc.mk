@@ -17,8 +17,8 @@ ADOC_CONF ?= ${ADOC_TOOLS_DIR}/docbook45.conf ${ADOC_TOOLS_DIR}/tex-passthrough.
 
 ADOC_PROPERTIES += $(shell find . -mindepth 1 -type d -exec sh -c '[ -f "{}/$$(basename {}).adoc" ] && [ -f "{}/$$(basename {}).properties" ] && echo "{}/$$(basename {}).properties"' \;)
 
-ifneq ("$(wildcard ${PLANTUML_SKINPARAM})","")
-PLANTUML_SKIN ?= $(shell awk -F'\t' '$$2 != "" {print " -S"$$1"="$$2}' ${PLANTUML_SKINPARAM})
+ifneq ("$(wildcard ${PLANTUML_SKIN})","")
+PLANTUML_SKIN := -config '${PLANTUML_SKIN}'
 endif
 
 PLANTUML ?= /etc/asciidoc/filters/plantuml/plantuml.jar
