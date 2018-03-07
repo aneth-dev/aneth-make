@@ -55,7 +55,7 @@ get_tex_style=$(shell find ${ADOC_TEX_INPUT} -maxdepth 1 -name $(call get_var,la
 
 $(info $(abspath ${ADOC_OUTPUT_DIR}))
 .SECONDEXPANSION:
-${DOCBOOKS}: %: $$(foreach req,$$(shell sed -n -e '/{BUILD_DIR}/! s,^\(include\|image\)::\(.*\)\[[^\]]*\],$$(subst ${ADOC_OUTPUT_DIR}/,,$$(dir $$@))/\2,p' -e 's,^\(include\|image\)::{BUILD_DIR}/\(.*\)\[[^\]]*\],\2,p' $$(subst .xml,.adoc,$$(subst ${ADOC_OUTPUT_DIR}/,,$$@))),$$(shell [ -f '$${req}' ] && echo '$${req}' || echo '${ADOC_OUTPUT_DIR}/$${req}')) $$(subst .xml,.adoc-conf,$$@)
+${DOCBOOKS}: %: $$(foreach req,$$(shell sed -n -e '/{BUILD_DIR}/! s,^\(include\|image\)::\(.*\)\[[^]]*\],$$(subst ${ADOC_OUTPUT_DIR}/,,$$(dir $$@))/\2,p' -e 's,^\(include\|image\)::{BUILD_DIR}/\(.*\)\[[^]]*\],\2,p' $$(subst .xml,.adoc,$$(subst ${ADOC_OUTPUT_DIR}/,,$$@))),$$(shell [ -f '$${req}' ] && echo '$${req}' || echo '${ADOC_OUTPUT_DIR}/$${req}')) $$(subst .xml,.adoc-conf,$$@)
 
 TABLES_SHEETS=$(shell for ods in $$(find * -name \*.ods); do for sheet in $$($(call ods-list-sheets,$${ods})); do echo "${ADOC_OUTPUT_DIR}/$$(dirname $${ods})/$$(basename $${ods} .ods)"-$${sheet}; done ;done)
 ifneq (,${TABLES_SHEETS})
