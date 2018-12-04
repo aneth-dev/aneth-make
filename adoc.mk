@@ -6,8 +6,9 @@
 #  - graphviz (used by plantuml),
 #  - dblatex (docbook -> latex),
 #  - rsvg-convert (svg -> pdf),
-#  - python whith stdlib, lxml and pyquery (optional, for ods2pvs tool)
-# Debian packages: asciidoc gawk dblatex poppler-utils librsvg2-bin graphviz telive-xetex libpython2.7-stdlib python-lxml python-pyquery
+#  - python whith stdlib, lxml and pyquery (optional, for ods2pvs tool),
+#  - exiftool
+# Debian packages: asciidoc gawk dblatex poppler-utils librsvg2-bin graphviz telive-xetex libpython2.7-stdlib python-lxml python-pyquery exiftool
 
 ADOC_TOOLS_DIR = $(addsuffix adoc-tools,$(dir $(filter %/adoc.mk,${MAKEFILE_LIST})))
 
@@ -84,7 +85,9 @@ ${ADOC_OUTPUT_DIR}/%-sorted.dvs: %.dvs
 
 .SECONDEXPANSION:
 ${ADOC_PDF}: %: $$(basename %)/$$(notdir $$(basename %)).xml ${ADOC_PROPERTIES} $$(basename %)/$$(notdir $$(basename %)).sty $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %))-docinfo.xml)) $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %)).properties))
-	dblatex --output=${@} '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) $(shell echo -n "$(call get_var_from,dblatex,,$(patsubst %.sty,%.properties,$(call get_tex_style,$<)))") -I ${ADOC_OUTPUT_DIR} ${<}
+	dblatex --output=${@}.tmp '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) $(shell echo -n "$(call get_var_from,dblatex,,$(patsubst %.sty,%.properties,$(call get_tex_style,$<)))") -I ${ADOC_OUTPUT_DIR} ${<}
+	exiftool -XMP-xmp:Identifier=$(call get_doc_var,$<,ref,).$(call get_doc_var,$<,version,) $@.tmp
+	mv $@.tmp $@
 
 ${ADOC_OUTPUT_DIR}/%.adoc-conf: %.adoc $(wildcard %.properties) ${ADOC_PROPERTIES}
 	@mkdir --parent $(dir $@)
