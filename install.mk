@@ -1,5 +1,7 @@
-ifneq (${INSTALL_VERBOSE},yes)
-INSTALL_VPRFX = @
+ifeq (${INSTALL_VERBOSE},yes)
+INSTALL_VPRFX :=
+else
+INSTALL_VPRFX := @
 endif
 
 %.mk: %.tree
