@@ -39,8 +39,9 @@ endif
 		}' $< >> $@.tmp
 	${INSTALL_VPRFX}\mv $@.tmp $@
 
+ifndef LF
 define LF
 
 
 endef
-
+endif
