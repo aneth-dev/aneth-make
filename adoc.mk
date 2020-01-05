@@ -14,7 +14,7 @@ ADOC_TOOLS_DIR = $(addsuffix adoc-tools,$(dir $(filter %/adoc.mk,${MAKEFILE_LIST
 
 ADOC_OUTPUT_DIR ?= .
 ADOC_TEX_INPUT ?= .
-ADOC_CONF ?= ${ADOC_TOOLS_DIR}/docbook45.conf ${ADOC_TOOLS_DIR}/tex-passthrough.conf
+ADOC_CONF ?= ${ADOC_TOOLS_DIR}/docbook45.conf ${ADOC_TOOLS_DIR}/tex-passthrough.conf ${ADOC_TOOLS_DIR}/conf/dblatex.conf ${ADOC_TOOLS_DIR}/conf/requirement.conf
 
 ADOC_PROPERTIES += $(shell find . -mindepth 1 -type d -exec sh -c '[ -f "{}/$$(basename {}).adoc" ] && [ -f "{}/$$(basename {}).properties" ] && echo "{}/$$(basename {}).properties"' \;)
 
@@ -25,6 +25,10 @@ endif
 PLANTUML ?= /etc/asciidoc/filters/plantuml/plantuml.jar
 ifeq ("$(wildcard ${PLANTUML})","")
 $(error Please set PLANTUML variable to the PlantUML jar file location)
+endif
+
+ifneq ("${PLANTUML_LIMIT_SIZE}","")
+PLANTUML_ENV=PLANTUML_LIMIT_SIZE=${PLANTUML_LIMIT_SIZE}
 endif
 
 DBLATEX_XSL ?= /etc/asciidoc/dblatex/asciidoc-dblatex.xsl
@@ -69,7 +73,7 @@ endif
 ${ADOC_OUTPUT_DIR}/%.svg: %.plantuml ${PLANTUML_SKINPARAM} ${ADOC_PROPERTIES} $(wildcard %.properties)
 	@mkdir --parent $(dir $@)
 	$(eval colors=$(shell gawk -F: 'match($$1,/^rgb\..*$$/,a){sub(/^\s*rgb\.\s*/,"",$$1); sub(/^\s/,"",$$2); print "-D" $$1 "=" $$2}' ${ADOC_PROPERTIES}))
-	java -jar ${PLANTUML} -Djava.awt.headless=true ${colors} ${PLANTUML_SKIN} -ofile $@ -tsvg $<
+	${PLANTUML_ENV} java -jar ${PLANTUML} -Djava.awt.headless=true ${colors} ${PLANTUML_SKIN} -ofile $@ -tsvg $<
 
 ${ADOC_OUTPUT_DIR}/%.pdf: %.tex
 	@mkdir --parent ${@D}
@@ -85,7 +89,7 @@ ${ADOC_OUTPUT_DIR}/%-sorted.dvs: %.dvs
 
 .SECONDEXPANSION:
 ${ADOC_PDF}: %: $$(basename %)/$$(notdir $$(basename %)).xml ${ADOC_PROPERTIES} $$(basename %)/$$(notdir $$(basename %)).sty $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %))-docinfo.xml)) $$(wildcard $$(subst ${ADOC_OUTPUT_DIR}/,,$$(basename %)/$$(notdir $$(basename %)).properties))
-	dblatex --output=${@}.tmp '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '/etc/asciidoc/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) $(shell echo -n "$(call get_var_from,dblatex,,$(patsubst %.sty,%.properties,$(call get_tex_style,$<)))") -I ${ADOC_OUTPUT_DIR} ${<}
+	dblatex --output=${@}.tmp '--fig-path=$(subst ${ADOC_OUTPUT_DIR}/,,$(dir ${<}))'  -p '${ADOC_TOOLS_DIR}/dblatex/asciidoc-dblatex.xsl' --texinputs '$(dir $(call get_tex_style,$<))' --texstyle=${<:.xml=.sty} $(shell gawk -F: '/^dblatex(.$(notdir $(basename ${@})))?:/{sub(/^[^:]*\s*:/,"",$$0); print $$0}' ${ADOC_PROPERTIES} $(wildcard $(subst ${ADOC_OUTPUT_DIR}/,,${*F}.properties))) $(shell echo -n "$(call get_var_from,dblatex,,$(patsubst %.sty,%.properties,$(call get_tex_style,$<)))") -I ${ADOC_OUTPUT_DIR} ${<}
 	exiftool -XMP-xmp:Identifier=$(call get_doc_var,$<,ref,).$(call get_doc_var,$<,version,) $@.tmp
 	mv $@.tmp $@
 
